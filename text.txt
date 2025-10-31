@@ -1,0 +1,36 @@
+0. xemtensorboard
+tensorboard --logdir ./logs/ppo_run1
+tensorboard --logdir ./logs/a3c_run1
+tensorboard --logdir ./logs/mcts_run1
+
+____________________________________________________________________________
+1. PPO test nhanh và train thật
+python train_ppo.py    --logdir ./logs/ppo_run    --save ./checkpoints/ppo_run.zip    --best_path ./checkpoints/ppo_best_run.zip    --timesteps 500000    --n_envs 8    --eval_freq 25000    --eval_eps 32    --learning_rate 1e-4    --lr_schedule linear    --n_steps 2048    --batch_size 64    --n_epochs 3    --ent_coef 0.005    --clip_range 0.2    --gamma 0.99    --gae_lambda 0.95    --proj_dim 512    --base_channels 64    --n_res_blocks 3    --dropout 0.1    --se    --flip_perspective    --save_every 25000    --obs_stack_size 4
+
+python train_ppo.py    --logdir ./logs/ppo_run_v2    --save ./checkpoints/ppo_run_v2.zip    --best_path ./checkpoints/ppo_best_run_v2.zip    --timesteps 500000    --resume_from ./checkpoints/ppo_run_step500000.zip    --n_envs 8    --eval_freq 25000    --eval_eps 32    --learning_rate 1e-4    --lr_schedule linear    --n_steps 2048    --batch_size 64    --n_epochs 3    --ent_coef 0.005    --clip_range 0.2    --gamma 0.99    --gae_lambda 0.95    --proj_dim 512    --base_channels 64    --n_res_blocks 3    --dropout 0.1    --se    --flip_perspective    --save_every 25000    --obs_stack_size 4
+____________________________________________________________________________
+2. A3C test nhanh và train thật
+python train_a3c.py    --logdir ./logs/a3c_run    --save ./checkpoints/a3c_run.pt    --best_path ./checkpoints/a3c_best.pt    --timesteps 1000000    --n_envs 8    --t_max 20    --learning_rate 1e-4    --entropy_coef 0.005    --value_coef 0.5    --max_grad_norm 0.5    --proj_dim 512    --base_channels 64    --n_res_blocks 3    --dropout 0.1    --se    --flip_perspective    --eval_freq 25000    --eval_eps 32    --save_every 100000    --obs_stack_size 4
+____________________________________________________________________________
+3. MCTS test nhanh và train thật
+python train_mcts.py    --logdir ./logs/mcts_run    --save ./checkpoints/mcts_run.pt    --best_path ./checkpoints/mcts_run_best.pt    --buffer_size 100000    --games_per_worker 32    --n_workers 8    --train_steps 20000    --batch_size 512    --lr 7.5e-4    --n_sim 80    --c_puct 1.4    --dirichlet_alpha 0.3    --dirichlet_eps 0.25    --flip_perspective    --obs_stack_size 4
+____________________________________________________________________________
+4. Demo chơi
+python play_visual.py    --ppo_path ./checkpoints/ppo_best_run_v2.zip    --white ppo    --black stockfish    --stockfish_path ./stockfish/stockfish-windows-x86-64-avx2.exe    --stockfish_elo 700    --stockfish_movetime 500    --fps 2    --se    --base_channels 64    --n_res_blocks 3    --proj_dim 512    --obs_stack_size 4
+
+python play_visual_v2_optimized.py    --ppo_path ./checkpoints/ppo_best_run_v2.zip    --a3c_path ./checkpoints/a3c_best.pt    --white ppo    --black a3c    --fps 2    --se    --base_channels 64    --n_res_blocks 3    --proj_dim 512    --obs_stack_size 4
+
+python evaluate_elo.py    --model_path ./checkpoints/ppo_best_run_v2.zip    --agent_type ppo    --stockfish_path ./stockfish/stockfish-windows-x86-64-avx2.exe    --stockfish_elo 1400    --games 50    --movetime 500    --se    --base_channels 64    --n_res_blocks 3    --proj_dim 512    --obs_stack_size 4
+
+python play_visual.py    --a3c_path ./checkpoints/mcts_run_best.pt    --white a3c    --black stockfish    --stockfish_path ./stockfish/stockfish-windows-x86-64-avx2.exe    --stockfish_elo 700    --stockfish_movetime 500    --fps 2    --se    --base_channels 64    --n_res_blocks 3    --proj_dim 512    --obs_stack_size 4
+
+____________________________________________________________________________
+5. Cải thiện mcts
+python generate_stockfish_data.py    --stockfish_path ./stockfish/stockfish-windows-x86-64-avx2.exe    --stockfish_elo 700    --games 100    --output_buffer sf_buffer_700.npz    --movetime 100    --obs_stack_size 4
+
+python train_mcts_optimized.py    --logdir ./logs/mcts_from_stockfish    --save ./checkpoints/mcts_sf_700.pt    --best_path ./checkpoints/mcts_sf_700_best.pt    --buffer_npz ./sf_buffer_700.npz    --train_steps 20000    --n_sim 80    --obs_stack_size 4    (các tham số model/train khác của bạn...)
+
+
+
+
+
